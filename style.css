@@ -1,0 +1,217 @@
+@font-face {
+  font-family: 'W95FA';
+  src:
+    url('./w95fa.woff2') format('woff2 supports variations'),
+    url('./w95fa.woff2') format('woff2-variations');
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-smooth: never;
+  -webkit-font-smoothing : none;
+  font-family: monospace;
+}
+
+p, h1, h2, h3 {
+  margin: 0;
+}
+
+canvas {
+  display: block;
+}
+button {
+  cursor: pointer;
+  color: #8a9ab5;
+  background-color: transparent;
+  border: none;
+  filter: drop-shadow(2px 2px 0px rgb(0, 0, 0));
+}
+
+button:hover {
+  transform:scale(1.1);
+ 
+}
+button:active {
+  transform: scale(1);
+}
+
+input {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid #8ab0b5;
+  color: white;
+  filter: drop-shadow(2px 2px 0px rgb(0, 0, 0));
+}
+
+input[type="number"] {
+  width: 5rem
+}
+
+#instructionContainer {
+  /* font-family: W95FA; */
+  z-index:10;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#instructionWindow {
+  position: relative;
+  background-color: rgba(40, 40, 40, 0.9);
+  color: #edede4;
+  text-shadow: 1px 2px 0px black;
+  width: 95%;
+  max-width: 36rem;
+  max-height: 90%;
+  overflow: auto;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+}
+#closeButton {
+  position: absolute;
+  top:1rem;
+  right:1rem;
+  font-size: large;
+}
+#instructionForm {
+  display: flex;
+  column-gap: 2rem;
+  row-gap: 1rem;
+  flex-direction: column;
+}
+#leftButton span {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+#upButton span {
+  display: inline-block;
+  transform: rotate(-90deg);
+}
+#downButton span{
+  display: inline-block;
+  transform: rotate(90deg);
+}
+.stepsContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.25rem 0;
+}
+.stepsContainer button {
+  padding: 0
+}
+.step {
+  font-weight: bold;
+}
+
+label{
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.hidden {
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  transition: 0.75s;
+}
+.notHidden {
+  height: inherit;
+  opacity: 1;
+  transition: 0.75s;
+}
+.out {
+  transition: 0.5s;
+  transform: translateY(100vh);
+  opacity: 0;
+}
+.in {
+  transform: translateY(0);
+  opacity: 1;
+  transition: 0.5s;
+}
+
+.hidden-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 1.1rem;
+  width: 1.1rem;
+  border: 2px solid #8ab0b5;
+  border-radius: 4px;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 0.33rem;
+  top: 0.05rem;
+  width: 0.3rem;
+  height: 0.7rem;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox {
+  cursor: pointer;
+}
+
+#instructions-title {
+  display: flex;
+  align-items: center;
+}
+#instructionButton {
+  position: relative;
+  margin-left: 0.75rem;
+}
+#instructionButton:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -0.25rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border: solid #8ab0b5;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+#instructionButton.open:after {
+  transform: rotate(-135deg);;
+}
+
+#instructionTitle {
+  cursor: pointer;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+}
+

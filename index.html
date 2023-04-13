@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Maurer Expanse</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+  </head>
+
+  <body>
+    <script src="sketch.js"></script>
+
+    <div id="instructionContainer" class="out">
+      <div id="instructionWindow">
+        
+        <button id="closeButton">✕</button>
+           
+        <div id="instructionForm">
+          <h1>Maurer Expanse</h1>
+          <h3>Parameters and Shortcuts Window</h3>
+
+          <i>"i" to toggle the menu</i>
+          <i>"q" to reset all parameters</i>
+          <label>
+            Base Location: 
+            <input type="number" id="baseNumberInput" >
+            <i>"r" to randomize</i>
+          </label>
+           
+          <div>
+            <div class="stepsContainer">
+              <button id="leftButton"><span>➔</span></button>
+              <button id="rightButton"><span>➔</span></button>
+              
+              <p>Horizontal step:</p>
+              <span id="horizontalStep" class="step"></span>
+            </div>
+            <div class="stepsContainer">  
+              <button id="downButton"><span>➔</span></button>
+              <button id="upButton"><span>➔</span></button>
+              
+              <p>Vertical step:</p>
+              <span id="verticalStep" class="step"></span>
+            </div>
+          </div>
+          
+          <label>
+            Scale: 
+            <input type="number" id="scaleNumberInput" min="1">
+            <i>"-" and "+"</i>
+          </label>
+          
+          <label>
+            Depth: 
+            <input type="number" id="depthNumberInput" >
+            <i>"[" and "]"</i>
+          </label>
+          
+          <label class="custom-checkbox">
+            <input type="checkbox" id="animationCheckbox" class="hidden-checkbox">
+            <span class="checkmark"></span>
+            Animation Mode <i>"a" to toggle</i>
+          </label>
+          <label class="custom-checkbox">
+            <input type="checkbox" id="constellationCheckbox" class="hidden-checkbox">
+            <span class="checkmark"></span>
+            Constellation Mode <i>"c" to toggle</i>
+          </label> 
+        </div>
+
+        <div id="instructionTitle">
+          <h3>Guide</h3>
+          <button id="instructionButton" ></button>
+        </div>
+
+        <div id="instructionsList" class="hidden">
+          <p>Press "r" to randomize your starting point (the top left pattern or "Base Location")</p>
+          
+          <br/>
+          <div>
+            <p>Once you've found an interesting location, use arrow keys to step through and explore the Maurer Expanse.</p>
+            <p>You can also tap on a pattern to move directly there.</p>
+            <i>Arrow keys are disabled while this menu is open.</i>
+          </div>
+          
+          <br/>
+          <div>
+            <p>Use "-" and "+" to zoom out and in.</p>
+            <i>Zooming out a lot can increase rendering time</i>
+          </div>
+  
+          <br/>
+          <div>
+            <p>Use "[" and "]" to decrease or increase the depth (amount of change between patterns)</p>
+            <i>Changing the depth by doubling or halving leads to the most recognizable changes</i>
+          </div>
+          <br />
+          <p>Once you've set the perfect scene, use "s" to save a screen shot or "p" to render a high quality version and save that</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
