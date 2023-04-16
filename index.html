@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
     <title>Maurer Expanse</title>
 
@@ -21,10 +21,12 @@
            
         <div id="instructionForm">
           <h1>Maurer Expanse</h1>
-          <h3>Parameters and Shortcuts Window</h3>
+          <h3>Parameters and Shortcuts Menu</h3>
 
-          <i>"i" to toggle the menu</i>
+          <i>"m" to toggle the menu</i>
           <i>"q" to reset all parameters</i>
+          <i>"s" to save a screenshot</i>
+          <i>"p" to save a hi-res render</i>
           <label>
             Base Location: 
             <input type="number" id="baseNumberInput" >
@@ -70,14 +72,27 @@
             <span class="checkmark"></span>
             Constellation Mode <i>"c" to toggle</i>
           </label> 
+          <label class="custom-checkbox">
+            <input type="checkbox" id="inkCheckbox" class="hidden-checkbox"
+            >
+            <span class="checkmark"></span>
+            Ink Mode <i>"i" to toggle</i>
+          </label>
+
+
+          <div id="buttonContainer">
+            <button id="resetButton">Reset</button>
+            <button id="randomizeButton">Randomize</button>
+            <button id="saveButton">Save</button>
+          </div>
         </div>
 
-        <div id="instructionTitle">
+        <div id="guideTitle">
           <h3>Guide</h3>
-          <button id="instructionButton" ></button>
+          <button id="guideButton" ></button>
         </div>
 
-        <div id="instructionsList" class="hidden">
+        <div id="guideList" class="hidden">
           <p>Press "r" to randomize your starting point (the top left pattern or "Base Location")</p>
           
           <br/>

@@ -24,6 +24,7 @@ p, h1, h2, h3 {
 
 canvas {
   display: block;
+  user-select: none;
 }
 button {
   cursor: pointer;
@@ -42,6 +43,7 @@ button:active {
 }
 
 input {
+  border-radius: 0;
   background-color: transparent;
   border: none;
   border-bottom: 2px solid #8ab0b5;
@@ -184,15 +186,11 @@ label{
   cursor: pointer;
 }
 
-#instructions-title {
-  display: flex;
-  align-items: center;
-}
-#instructionButton {
+#guideButton {
   position: relative;
   margin-left: 0.75rem;
 }
-#instructionButton:after {
+#guideButton:after {
   content: "";
   position: absolute;
   left: 0;
@@ -204,14 +202,21 @@ label{
   transform: rotate(45deg);
 }
 
-#instructionButton.open:after {
+#guideButton.open:after {
   transform: rotate(-135deg);;
 }
 
-#instructionTitle {
+#guideTitle {
   cursor: pointer;
   margin: 1rem 0;
   display: flex;
   align-items: center;
 }
-
+#buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  justify-content: center;
+  align-items: center;
+  margin:1rem 0  ;
+}

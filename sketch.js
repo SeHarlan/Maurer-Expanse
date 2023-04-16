@@ -4,6 +4,7 @@ let baseNum;
 let loading = false;
 let constellationMode = false;
 let animationMode = true;
+let inkMode = false;
 
 let points;
 let counter;
@@ -11,26 +12,42 @@ let counterMax, counterInc;
 let rows, cols;
 let randHue;
 
-let instructionContainer, instructionWindow, closeButton, instructionTitle, instructionsList,
+let instructionContainer, instructionWindow, closeButton, guideTitle, guideList,
   baseNumberInput, scaleNumberInput, depthNumberInput,
   horizontalStep, verticalStep, leftButton, rightButton, downButton, upButton,
-  animationCheckbox, constellationCheckbox;
+  animationCheckbox, constellationCheckbox, inkCheckbox,
+  saveButton, resetButton, randomizeButton;
 let instructionWindowHidden = true;
-let instructionsHidden = true;
+let guideHidden = true;
 
 //TODO
 //Create second canvas for hi res printing
-//implement touch/mobile interaction (swipe to move, pinch to zoom, double tap for instructions)
+//implement touch/mobile interaction (swipe to move) make sure taping menu doesnt close it, make sure tap to pattern works
+//try google font
+//impliment WEBGL check and fine tune shaders
 
+let graphics;
+let useShader = true
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  colorMode(HSL); 
+  
+  const mode = useShader ? WEBGL : P2D
+  createCanvas(windowWidth, windowHeight, mode);
+
+  if (useShader) {
+    paintShader = new p5.Shader(_renderer, vertexShader, fragmentShader);
+    shader(paintShader)
+  }
+
+  graphics = createGraphics(width, height);
+  graphics.colorMode(HSL)
+
   resetParams()
   initParams();
 
+
   instructionContainer = document.getElementById("instructionContainer");
-  instructionTitle = document.getElementById("instructionTitle");
-  instructionsList = document.getElementById("instructionsList");
+  guideTitle = document.getElementById("guideTitle");
+  guideList = document.getElementById("guideList");
   closeButton = document.getElementById("closeButton");
   baseNumberInput = document.getElementById("baseNumberInput");
   leftButton = document.getElementById("leftButton")
@@ -43,52 +60,44 @@ function setup() {
   depthNumberInput = document.getElementById("depthNumberInput")
   animationCheckbox = document.getElementById("animationCheckbox")
   constellationCheckbox = document.getElementById("constellationCheckbox")
+  inkCheckbox = document.getElementById("inkCheckbox")
+  saveButton = document.getElementById("saveButton")
+  resetButton = document.getElementById("resetButton")
+  randomizeButton = document.getElementById("randomizeButton")
 
-  instructionContainer.onclick = (e) => e.stopPropagation();
+  // instructionContainer.ontouchend = (e) => {
+  //   e.stopPropagation();
+  //   e.preventDefault();
+  // }
+
+  // instructionContainer.onclick = (e) => {
+  //   e.stopPropagation();
+  //   e.preventDefault();
+  // }
   instructionContainer.className = "out";
 
-  instructionsList.className = "hidden";
+  guideList.className = "hidden";
 
-  instructionTitle.onclick = () => {
-    
-    instructionsHidden = !instructionsHidden;
-
-    if (instructionsHidden) {
-      instructionButton.className = ""
-      instructionsList.className = "hidden";
-    } else {
-      instructionButton.className = "open"
-      instructionsList.className = "notHidden";
-    }
-  }
+  guideTitle.onclick = () => handleGuideToggle();
+  guideTitle.ontouchend = () => handleGuideToggle();
   
-  closeButton.onclick = () => {
-    instructionContainer.className = "out"
-    instructionWindowHidden = true
-  }
+  closeButton.onclick = () => handleMenuToggle();
+  closeButton.ontouchend = () => handleMenuToggle();
+
+  leftButton.onclick = () => handleMoveLeft()
+  leftButton.ontouchend = () => handleMoveLeft()
+
+  rightButton.onclick = () => handleMoveRight();
+  rightButton.ontouchend = () => handleMoveRight();
+
+  downButton.onclick = () => handleMoveDown();
+  downButton.ontouchend = () => handleMoveDown();
+
+  upButton.onclick = () => handleMoveUp();
+  upButton.ontouchend = () => handleMoveUp();
 
   baseNumberInput.onchange = e => {
     baseNum = Number(e.target.value)
-    dbMakeGrid()
-  }
-  leftButton.onclick = () => {
-    initD -= depth
-    horizontalStep.textContent = initD;
-    dbMakeGrid()
-  }
-  rightButton.onclick = () => {
-    initD += depth
-    horizontalStep.textContent = initD;
-    dbMakeGrid()
-  }
-  downButton.onclick = () => {
-    initN += depth
-    verticalStep.textContent = initN;
-    dbMakeGrid()
-  }
-  upButton.onclick = () => {
-    initN -= depth
-    verticalStep.textContent = initN;
     dbMakeGrid()
   }
 
@@ -102,15 +111,13 @@ function setup() {
     dbMakeGrid()
   }
 
-  animationCheckbox.onchange = e => {
-    animationMode = e.target.checked
-    dbMakeGrid()
-  }
+  animationCheckbox.onchange = e => handleAnimationToggle();
+  constellationCheckbox.onchange = e => handleConstellationToggle();
+  inkCheckbox.onchange = e => handleInkToggle()
 
-  constellationCheckbox.onchange = e => {
-    constellationMode = e.target.checked
-    dbMakeGrid()
-  }
+  saveButton.onclick = () => handlePrint()
+  resetButton.onclick = () => handleReset()
+  randomizeButton.onclick = () => handleRandomize()
 
   initUI()
 }
@@ -133,6 +140,17 @@ function draw() {
   if (counter < counterMax && loading == false) {
     drawGrid()
   } 
+
+  //Shader code
+  if (useShader) {
+    paintShader.setUniform("resolution", [width, height]);
+    paintShader.setUniform("texture", graphics)
+    paintShader.setUniform("rando", random())
+    paintShader.setUniform("inkMode", inkMode)
+    rect(-width / 2, -height / 2, width, height);
+  } else {
+    image(graphics, 0, 0, width, height)
+  } 
 }
 
 function resetParams() {
@@ -153,12 +171,12 @@ function initParams() {
 
 function getRadius() {
   const base = min(height, width)
-  const div = scl//min(rows, cols)
+  const div = scl//max(rows, cols)
   return base / div * 0.35
 }
 
 function drawGrid() {
-  noFill();
+  graphics.noFill();
   
   const radius = getRadius()
 
@@ -178,15 +196,23 @@ function drawGrid() {
     const drawLine = (i) => {
       const v1 = getVector(i)
       const v2 = getVector(i + counterInc)
-      // const l = 100//99 - map(p.y, 0, height, 0, 6)
+
       if (constellationMode) {
-        strokeWeight(constrain(5 - scl, 1, 5));
-        stroke(randHue, 60, 100)
-        point(v1.x, v1.y)
+        graphics.strokeWeight(constrain(5 - scl, 1, 5));
+        if (inkMode) {
+          graphics.stroke(240, 50, 5);
+        } else {
+          graphics.stroke(60, 50, 99);
+        }
+        graphics.point(v1.x, v1.y)
       } else {
-        strokeWeight(1);
-        stroke(randHue, 60, 100, 0.6)
-        line(v1.x, v1.y, v2.x, v2.y)
+        graphics.strokeWeight(1);
+        if (inkMode) {
+          graphics.stroke(240, 50, 1, 0.5);
+        } else {
+          graphics.stroke(60, 50, 99, 0.5);
+        }
+        graphics.line(v1.x, v1.y, v2.x, v2.y)
       }
     }
     if (animationMode) {
@@ -235,7 +261,11 @@ function makeGrid() {
       points.push(p)
     }
   }
-  background(0, 0, 0);
+  if (inkMode) {
+    graphics.background(60, 50, 99);
+  } else {
+    graphics.background(240, 50, 1);
+  }
   loading = false
   counter = 0
 }
@@ -262,130 +292,285 @@ const dbMakeGrid = () => {
   deboucedMakeGrid()
 }
 
-function keyPressed() {
-  // If you hit the s key, save an image
-  if (key == 's') {
-    save("Maurer Expanse.png");
-  }
-
-  if (key == 'p') {
-    //TODO
-    // create larger canvas and save a hi-res version from there
-  }
-
-  if (key == "i") {
-    if (instructionWindowHidden) {
-      instructionContainer.className = "in"
-      instructionWindowHidden = false
-    } else {
-      instructionContainer.className = "out"
-      instructionWindowHidden = true
-    }
-  }
-  if (keyCode === ESCAPE) {
+function handleMenuToggle() { 
+  if (instructionWindowHidden) {
+    instructionContainer.className = "in"
+    instructionWindowHidden = false
+  } else {
     instructionContainer.className = "out"
     instructionWindowHidden = true
   }
-  
+}
+function handleGuideToggle() {
+  guideHidden = !guideHidden;
 
-
-  if (key == 'r') {
-    initParams()
-    initUI()
-  }
-  if (key == 'c') {
-    constellationMode = !constellationMode
-
-    constellationCheckbox.checked = constellationMode
-    dbMakeGrid()
-  }
-  if (key == 'a') {
-    animationMode = !animationMode
-
-    animationCheckbox.checked = animationMode
-    dbMakeGrid()
-  }
-
-  if (key == 'q') {
-    resetParams()
-    initParams()
-    initUI()
-    dbMakeGrid()
-  }
-
-
-  if (key == "-" || key == "_") {
-    scl++
-    scaleNumberInput.value = scl;
-    dbMakeGrid()
-  }
-  if (key == "+" || key == "=") {
-    if (scl <= 1) return 
-    scl--
-    scaleNumberInput.value = scl;
-    dbMakeGrid()
-  }
- 
-  if (key == "]" || key == "}") {
-    depth /= 2;
-    depthNumberInput.value = depth
-    dbMakeGrid()
-  }
-  if (key == "[" || key == "{") {
-    depth *= 2;
-    depthNumberInput.value = depth
-    dbMakeGrid()
-  }
-
-  if (!instructionWindowHidden) return;
-  //No key board commands past here when instruction window open
-  if (keyCode === LEFT_ARROW) {
-    initD -= depth
-    horizontalStep.textContent = initD;
-    dbMakeGrid()
-  }
-  if (keyCode === RIGHT_ARROW) {
-    initD += depth
-    horizontalStep.textContent = initD;
-    dbMakeGrid()
-  }
-  if (keyCode === DOWN_ARROW) {
-    initN += depth
-    verticalStep.textContent = initN;
-    dbMakeGrid()
-  }
-  if (keyCode === UP_ARROW) {
-    initN -= depth
-    verticalStep.textContent = initN;
-    dbMakeGrid()
+  if (guideHidden) {
+    guideButton.className = ""
+    guideList.className = "hidden";
+  } else {
+    guideButton.className = "open"
+    guideList.className = "notHidden";
   }
 }
 
+function handlePrint() {
+// create larger canvas and save a hi-res version from there
+}
+
+function handleAnimationToggle() {
+  animationMode = !animationMode
+
+  animationCheckbox.checked = animationMode
+  dbMakeGrid()
+}
+function handleConstellationToggle() {
+  constellationMode = !constellationMode
+
+  constellationCheckbox.checked = constellationMode
+  dbMakeGrid()
+}
+
+function handleInkToggle() {
+  inkMode = !inkMode;
+
+  inkCheckbox.checked = inkMode;
+  dbMakeGrid()
+}
+
+function handleReset() {
+  resetParams()
+  initParams()
+  initUI()
+  dbMakeGrid()
+}
+
+function handleRandomize() {
+  initParams()
+  initUI()
+}
+
+function handleScaleOut() {
+  scl++
+  scaleNumberInput.value = scl;
+  dbMakeGrid()
+}
+
+function handleScaleIn() {
+  if (scl <= 1) return
+  scl--
+  scaleNumberInput.value = scl;
+  dbMakeGrid()
+}
+
+function handleDepthOut() {
+  depth *= 2;
+  depthNumberInput.value = depth
+  dbMakeGrid()
+}
+
+function handleDepthIn() {
+  depth /= 2;
+  depthNumberInput.value = depth
+  dbMakeGrid()
+}
+
+function handleMoveLeft() {
+  initD -= depth
+  horizontalStep.textContent = initD;
+  dbMakeGrid()
+}
+
+function handleMoveRight() {
+  initD += depth
+  horizontalStep.textContent = initD;
+  dbMakeGrid()
+}
+
+function handleMoveDown() {
+  initN += depth
+  verticalStep.textContent = initN;
+  dbMakeGrid()
+}
+function handleMoveUp() {
+  initN -= depth
+  verticalStep.textContent = initN;
+  dbMakeGrid()
+}
+
+
+function keyPressed() {
+  // If you hit the s key, save an image
+  if (key == 's') save("Maurer Expanse.png");
+  if (key == 'p') handlePrint();
+  if (key == "m" || keyCode === ESCAPE) handleMenuToggle()
+  if (key == 'r') handleRandomize();
+  if (key == 'c') handleConstellationToggle();
+  if (key == 'a') handleAnimationToggle();
+  if (key == "i") handleInkToggle();
+  if (key == 'q') handleReset();
+  if (key == "-" || key == "_") handleScaleOut();
+  if (key == "+" || key == "=") handleScaleIn();
+  if (key == "[" || key == "{") handleDepthOut();
+  if (key == "]" || key == "}") handleDepthIn();
+
+  if (!instructionWindowHidden) return;
+  //No key board commands past here when instruction window open
+  if (keyCode === LEFT_ARROW) handleMoveLeft();
+  if (keyCode === RIGHT_ARROW) handleMoveRight();
+  if (keyCode === DOWN_ARROW) handleMoveDown();
+  if (keyCode === UP_ARROW) handleMoveUp();
+}
+
+let lastTouchTime = 0;
+let touchPoints = [];
+let initialDistance = 0;
+const doubleTapInterval = 300; // Time in milliseconds between taps to be considered a double tap
+function touchStarted(e) {
+  let currentTime = millis();
+
+  if (touches.length === 2) {
+    touchPoints = touches;
+    initialDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+  } else if (currentTime - lastTouchTime < doubleTapInterval) {
+    onDoubleTap();
+  }
+  lastTouchTime = currentTime; 
+}
+
+function onDoubleTap() {
+  handleMenuToggle()
+}
+
 function mouseClicked() {
+  handlePatternTap(mouseX, mouseY);
+}
+
+function touchEnded() {
+  // if (touches.length > 0) {
+    const touchX = touches[0].x;
+    const touchY = touches[0].y;
+    handlePatternTap(touchX, touchY);
+  
+  touchPoints = [];
+  initialDistance = 0;
+}
+
+function handlePatternTap(x, y) {
   if (!instructionWindowHidden) return;
   for (let i = 0; i < points.length; i++) {
-    const p = points[i]
-    const dist = p.dist(createVector(mouseX, mouseY))
-    const radius = getRadius()
+    const p = points[i];
+    const dist = p.dist(createVector(x, y));
+    const radius = getRadius();
 
     if (dist <= radius) {
       initD = p.d;
       initN = p.n;
-      dbMakeGrid()
-      return
+
+      horizontalStep.textContent = initD;
+      verticalStep.textContent = initN;
+      dbMakeGrid();
+      return;
+    }
+  }
+}
+
+const debounceOnPinchIn = debounce(handleScaleIn, 50);
+const debounceOnPinchOut = debounce(handleScaleOut, 50);
+function touchMoved() {
+  if (touches.length === 2 && touchPoints.length === 2) {
+    let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+   
+    if (currentDistance > initialDistance) {
+      debounceOnPinchOut();
+    } else {
+      debounceOnPinchIn();
     }
   }
   return false
 }
 
-function touchStarted() {
-  if (touches.length >= 2) {
-    if (instructionWindowHidden) {
-      instructionContainer.className = "in"
-      instructionWindowHidden = false
-    } else {
-      instructionContainer.className = "out"
-      instructionWindowHidden = true
-    }
-  }
+
+const vertexShader = `
+attribute vec3 aPosition;
+attribute vec2 aTexCoord;
+
+varying vec2 vTexCoord;
+
+void main() {
+  vTexCoord = aTexCoord;
+  vec4 positionVec4 = vec4(aPosition, 1.0);
+  positionVec4.xy = positionVec4.xy * 2.0 - 1.0;
+  
+  gl_Position = positionVec4;
 }
+`;
+
+const fragmentShader = `
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+varying vec2 vTexCoord;
+
+uniform vec2 resolution;
+uniform sampler2D texture;
+uniform bool inkMode;
+
+float rando = 1.0;
+
+float sRandom(vec2 st) {
+  return fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float pattern(vec2 uv) {
+  float scale = 125.0;
+  float line_width = 0.2;
+  vec2 grid = fract(uv * scale);
+  float dOff = sRandom(uv) * 0.5;
+  float diagonal = abs(grid.x - grid.y - dOff);
+
+  float off = 1.0 - sRandom(uv * 2.0) * 0.2;
+  float anti_diagonal = abs(grid.x + grid.y - off);
+
+  float mult = inkMode ? -1.0 : 1.0;
+
+  float lines = min(diagonal, anti_diagonal) * mult;
+
+  return smoothstep(line_width, -line_width, lines);
+}
+
+vec2 wave(vec2 uv, float frequency, float amplitude, float r) {
+  float f = frequency;
+  
+  float xFac = sRandom(vec2(r, uv.y*0.000001)) * 50.0;
+  float yFac = sRandom(vec2(uv.x*0.000001, r)) * 50.0;
+    
+  vec2 blockFactor = vec2(xFac,yFac);
+  float yOff = sin(uv.x * f + yFac) * amplitude;
+  
+  return vec2(0.0, yOff);
+}
+
+void main() {
+  vec2 uv = vTexCoord;
+  uv.y = 1.0 - uv.y;
+  vec2 pixel_uv = uv;
+
+  pixel_uv += wave(pixel_uv, 500.0, 0.0007, rando) + wave(pixel_uv, 100.0, 0.0005, rando*5.0);
+
+  float canvas_texture = pattern(pixel_uv);
+  vec4 canvas_col = vec4(vec3(canvas_texture), 1.0);
+
+  vec4 image = texture2D(texture, uv);
+
+  gl_FragColor = mix(canvas_col, image, 0.9); 
+
+  float noise = 0.0;
+
+  noise = (0.5 - sRandom(vec2(uv.x*7.5, uv.y*0.0075))) * 0.25;
+
+  gl_FragColor.r += noise;
+  gl_FragColor.g += noise;
+  gl_FragColor.b += noise;
+}
+`;
