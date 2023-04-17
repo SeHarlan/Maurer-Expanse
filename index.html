@@ -16,23 +16,25 @@
 
     <div id="instructionContainer" class="out">
       <div id="instructionWindow">
-        
         <button id="closeButton">✕</button>
-           
+            
         <div id="instructionForm">
           <h1>Maurer Expanse</h1>
           <h3>Parameters and Shortcuts Menu</h3>
 
-          <i>"m" to toggle the menu</i>
-          <i>"q" to reset all parameters</i>
-          <i>"s" to save a screenshot</i>
-          <i>"p" to save a hi-res render</i>
+          <i class="mobile">Double tap to toggle the menu</i>
+
+          <i class="desktop">"m" to toggle the menu</i>
+          <i class="desktop">"q" to reset all parameters</i>
+          <i class="desktop">"s" to save a screenshot</i>
+          <i class="desktop">"p" to save a hi-res render</i>
+
           <label>
             Base Location: 
             <input type="number" id="baseNumberInput" >
-            <i>"r" to randomize</i>
+            <i class="desktop">"r" to randomize</i>
           </label>
-           
+            
           <div>
             <div class="stepsContainer">
               <button id="leftButton"><span>➔</span></button>
@@ -53,37 +55,37 @@
           <label>
             Scale: 
             <input type="number" id="scaleNumberInput" min="1">
-            <i>"-" and "+"</i>
+            <i class="desktop">"-" and "+"</i>
           </label>
           
           <label>
             Depth: 
             <input type="number" id="depthNumberInput" >
-            <i>"[" and "]"</i>
+            <i class="desktop">"[" and "]"</i>
           </label>
           
           <label class="custom-checkbox">
             <input type="checkbox" id="animationCheckbox" class="hidden-checkbox">
             <span class="checkmark"></span>
-            Animation Mode <i>"a" to toggle</i>
+            Animation Mode <i class="desktop">"a" to toggle</i>
           </label>
           <label class="custom-checkbox">
             <input type="checkbox" id="constellationCheckbox" class="hidden-checkbox">
             <span class="checkmark"></span>
-            Constellation Mode <i>"c" to toggle</i>
+            Constellation Mode <i class="desktop">"c" to toggle</i>
           </label> 
           <label class="custom-checkbox">
             <input type="checkbox" id="inkCheckbox" class="hidden-checkbox"
             >
             <span class="checkmark"></span>
-            Ink Mode <i>"i" to toggle</i>
+            Ink Mode <i class="desktop">"i" to toggle</i>
           </label>
 
 
           <div id="buttonContainer">
-            <button id="resetButton">Reset</button>
-            <button id="randomizeButton">Randomize</button>
-            <button id="saveButton">Save</button>
+            <button id="resetButton" class="guideButtons">Reset</button>
+            <button id="randomizeButton" class="guideButtons">Randomize</button>
+            <button id="saveButton" class="guideButtons">Save</button>
           </div>
         </div>
 
@@ -93,30 +95,60 @@
         </div>
 
         <div id="guideList" class="hidden">
-          <p>Press "r" to randomize your starting point (the top left pattern or "Base Location")</p>
-          
-          <br/>
-          <div>
-            <p>Once you've found an interesting location, use arrow keys to step through and explore the Maurer Expanse.</p>
-            <p>You can also tap on a pattern to move directly there.</p>
-            <i>Arrow keys are disabled while this menu is open.</i>
+          <div class="desktop">
+            <p>Press "r" to randomize your starting point (the top left pattern or "Base Location")</p>
+            
+            <br/>
+            <div>
+              <p>Once you've found an interesting location, use arrow keys to step through and explore the Maurer Expanse.</p>
+              <p>If you click on a pattern and hold you can move directly there.</p>
+              <i>Arrow keys are disabled while this menu is open.</i>
+            </div>
+            
+            <br/>
+            <div>
+              <p>Use "-" and "+" to zoom out and in.</p>
+              <i>Zooming out a lot can increase rendering time</i>
+            </div>
+    
+            <br/>
+            <div>
+              <p>Use "[" and "]" to decrease or increase the depth (amount of change between patterns)</p>
+              <i>Changing the depth by doubling or halving leads to the most recognizable changes</i>
+            </div>
+            <br />
+            <p>Once you've set the perfect scene, use "s" to save a screenshot or "p" to render a high quality version and save that.</p>
+
+            <br/>
+            <p>If you would like to start over and reset all the base parameters use "q"</p>
           </div>
-          
-          <br/>
-          <div>
-            <p>Use "-" and "+" to zoom out and in.</p>
-            <i>Zooming out a lot can increase rendering time</i>
-          </div>
-  
-          <br/>
-          <div>
-            <p>Use "[" and "]" to decrease or increase the depth (amount of change between patterns)</p>
-            <i>Changing the depth by doubling or halving leads to the most recognizable changes</i>
-          </div>
-          <br />
-          <p>Once you've set the perfect scene, use "s" to save a screen shot or "p" to render a high quality version and save that</p>
+
+          <div class="mobile">
+            <p>Tap Randomize to change your starting point (the top left pattern or "Base Location")</p>
+            <br />
+            <div>
+              <p>Once you've found an interesting location, swipe to step through and explore the Maurer Expanse.</p>
+              <p>If you tap and hold a pattern you can move directly there.</p>
+            </div>
+            
+            <br />
+            <div>
+              <p>Use pinch gestures to zoom out and in.</p>
+              <i>Zooming out a lot can increase rendering time</i>
+            </div>
+            
+            <br />
+            <div>
+              <p>Decrease or increase the depth (amount of change between patterns)</p>
+              <i>Changing the depth by doubling or halving leads to the most recognizable changes</i>
+            </div>
+            <br />
+            <p>Once you've set the perfect scene tap Save to capture it.</p>
+            <br/>
+            <p>If you would like to start over, tap Reset to reset all the base parameters</p>
         </div>
       </div>
+    
     </div>
   </body>
 </html>

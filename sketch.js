@@ -10,7 +10,6 @@ let points;
 let counter;
 let counterMax, counterInc;
 let rows, cols;
-let randHue;
 
 let instructionContainer, instructionWindow, closeButton, guideTitle, guideList,
   baseNumberInput, scaleNumberInput, depthNumberInput,
@@ -22,7 +21,6 @@ let guideHidden = true;
 
 //TODO
 //Create second canvas for hi res printing
-//implement touch/mobile interaction (swipe to move) make sure taping menu doesnt close it, make sure tap to pattern works
 //try google font
 //impliment WEBGL check and fine tune shaders
 
@@ -36,6 +34,8 @@ function setup() {
   if (useShader) {
     paintShader = new p5.Shader(_renderer, vertexShader, fragmentShader);
     shader(paintShader)
+
+    paintShader.setUniform("rando", random())
   }
 
   graphics = createGraphics(width, height);
@@ -46,6 +46,7 @@ function setup() {
 
 
   instructionContainer = document.getElementById("instructionContainer");
+  instructionWindow = document.getElementById("instructionWindow");
   guideTitle = document.getElementById("guideTitle");
   guideList = document.getElementById("guideList");
   closeButton = document.getElementById("closeButton");
@@ -65,36 +66,18 @@ function setup() {
   resetButton = document.getElementById("resetButton")
   randomizeButton = document.getElementById("randomizeButton")
 
-  // instructionContainer.ontouchend = (e) => {
-  //   e.stopPropagation();
-  //   e.preventDefault();
-  // }
-
-  // instructionContainer.onclick = (e) => {
-  //   e.stopPropagation();
-  //   e.preventDefault();
-  // }
   instructionContainer.className = "out";
 
   guideList.className = "hidden";
 
   guideTitle.onclick = () => handleGuideToggle();
-  guideTitle.ontouchend = () => handleGuideToggle();
   
   closeButton.onclick = () => handleMenuToggle();
-  closeButton.ontouchend = () => handleMenuToggle();
 
   leftButton.onclick = () => handleMoveLeft()
-  leftButton.ontouchend = () => handleMoveLeft()
-
   rightButton.onclick = () => handleMoveRight();
-  rightButton.ontouchend = () => handleMoveRight();
-
   downButton.onclick = () => handleMoveDown();
-  downButton.ontouchend = () => handleMoveDown();
-
   upButton.onclick = () => handleMoveUp();
-  upButton.ontouchend = () => handleMoveUp();
 
   baseNumberInput.onchange = e => {
     baseNum = Number(e.target.value)
@@ -143,10 +126,7 @@ function draw() {
 
   //Shader code
   if (useShader) {
-    paintShader.setUniform("resolution", [width, height]);
     paintShader.setUniform("texture", graphics)
-    paintShader.setUniform("rando", random())
-    paintShader.setUniform("inkMode", inkMode)
     rect(-width / 2, -height / 2, width, height);
   } else {
     image(graphics, 0, 0, width, height)
@@ -155,14 +135,13 @@ function draw() {
 
 function resetParams() {
   scl = 3
-  initD = 1;
-  initN = 1;
-  depth = 0.5
+  initD = 0;
+  initN = 0;
+  depth = 0.25
 }
 
 function initParams() {
   baseNum = floor(randomGaussian(0, 1000))
-  randHue = random(130, 360 + 80) % 360
 
   counterInc = radians(1)
   counterMax = TWO_PI - radians(1)
@@ -171,7 +150,7 @@ function initParams() {
 
 function getRadius() {
   const base = min(height, width)
-  const div = scl//max(rows, cols)
+  const div = scl;
   return base / div * 0.35
 }
 
@@ -228,8 +207,18 @@ function drawGrid() {
 }
 
 function makeGrid() {
+
   loading = true
   points = [];
+  if (inkMode) {
+    graphics.background(60, 50, 99);
+  } else {
+    graphics.background(240, 50, 1);
+  }
+  if (useShader) {
+    paintShader.setUniform("inkMode", inkMode)
+    paintShader.setUniform("resolution", [width, height]);
+  }
 
   // grid
   rows = scl;
@@ -252,8 +241,14 @@ function makeGrid() {
       let gx = xNudge + mx + x * cw;
 
       const index = x + y * cols;
-      const d = initD + (index % cols) * depth;
-      const n = initN + (floor((index / cols))) * depth;
+
+      let d = (index % cols) * depth;
+      let n = (floor(index / cols)) * -depth;
+
+      n -= d
+
+      d += initD
+      n += initN
 
       const p = createVector(gx, gy);
       p.d = d;
@@ -261,15 +256,9 @@ function makeGrid() {
       points.push(p)
     }
   }
-  if (inkMode) {
-    graphics.background(60, 50, 99);
-  } else {
-    graphics.background(240, 50, 1);
-  }
   loading = false
   counter = 0
 }
-
 
 function debounce(func, wait) {
   let timeout;
@@ -334,6 +323,7 @@ function handleInkToggle() {
   inkMode = !inkMode;
 
   inkCheckbox.checked = inkMode;
+
   dbMakeGrid()
 }
 
@@ -375,13 +365,15 @@ function handleDepthIn() {
 }
 
 function handleMoveLeft() {
-  initD -= depth
+  initD += depth
+  initN -= depth
   horizontalStep.textContent = initD;
   dbMakeGrid()
 }
 
 function handleMoveRight() {
-  initD += depth
+  initD -= depth
+  initN += depth
   horizontalStep.textContent = initD;
   dbMakeGrid()
 }
@@ -422,44 +414,20 @@ function keyPressed() {
 }
 
 let lastTouchTime = 0;
-let touchPoints = [];
 let initialDistance = 0;
+let currentDistance = 0;
+let longTouchTimeout;
+let touchStartPos = null;
+let touchEndPos = null;
+
+const minSwipeDistance = 50;
 const doubleTapInterval = 300; // Time in milliseconds between taps to be considered a double tap
-function touchStarted(e) {
-  let currentTime = millis();
 
-  if (touches.length === 2) {
-    touchPoints = touches;
-    initialDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-  } else if (currentTime - lastTouchTime < doubleTapInterval) {
-    onDoubleTap();
-  }
-  lastTouchTime = currentTime; 
-}
-
-function onDoubleTap() {
-  handleMenuToggle()
-}
-
-function mouseClicked() {
-  handlePatternTap(mouseX, mouseY);
-}
-
-function touchEnded() {
-  // if (touches.length > 0) {
-    const touchX = touches[0].x;
-    const touchY = touches[0].y;
-    handlePatternTap(touchX, touchY);
-  
-  touchPoints = [];
-  initialDistance = 0;
-}
-
-function handlePatternTap(x, y) {
+function handlePatternTap() {
   if (!instructionWindowHidden) return;
   for (let i = 0; i < points.length; i++) {
     const p = points[i];
-    const dist = p.dist(createVector(x, y));
+    const dist = p.dist(createVector(mouseX, mouseY));
     const radius = getRadius();
 
     if (dist <= radius) {
@@ -474,21 +442,78 @@ function handlePatternTap(x, y) {
   }
 }
 
-const debounceOnPinchIn = debounce(handleScaleIn, 50);
-const debounceOnPinchOut = debounce(handleScaleOut, 50);
-function touchMoved() {
-  if (touches.length === 2 && touchPoints.length === 2) {
-    let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-   
-    if (currentDistance > initialDistance) {
-      debounceOnPinchOut();
-    } else {
-      debounceOnPinchIn();
-    }
+function touchStarted() {
+  if (!instructionWindowHidden) return;
+  let currentTime = millis();
+  console.log("🚀 ~ file: sketch.js:444 ~ touchStarted ~ touches:", touches)
+
+  if (touches && touches.length >= 2) { //handle pinch zoom
+    initialDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+  } else if (currentTime - lastTouchTime < doubleTapInterval) { //handle double tap
+    handleMenuToggle()
+    clearTimeout(longTouchTimeout);
+  } else {
+    //handle long touch
+    longTouchTimeout = setTimeout(() => {
+      if (millis() - lastTouchTime > doubleTapInterval) {
+        handlePatternTap(mouseX, mouseY);
+      }
+    }, doubleTapInterval);
+
+    //handle swipe
+    touchStartPos = createVector(mouseX, mouseY);
   }
+
+  //double tap vars
+  lastTouchTime = currentTime;
   return false
 }
 
+function touchMoved() {
+  if (!instructionWindowHidden) return;
+
+  if (touches.length >= 2) { //handle pinch zoom
+    currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+  }
+  return false;
+}
+
+function touchEnded() {
+  clearTimeout(longTouchTimeout);
+
+  if (!instructionWindowHidden) return;
+
+  //Handle pinch to zoom
+  if (currentDistance && initialDistance) {
+    if (currentDistance > initialDistance) {
+      handleScaleIn()
+    } else {
+      handleScaleOut()
+    }
+  } else if (touchStartPos) { //handle swipe
+    touchEndPos = createVector(mouseX, mouseY);
+    
+    const swipeVector = p5.Vector.sub(touchEndPos, touchStartPos);
+    const swipeDistance = swipeVector.mag();
+    if (swipeDistance >= minSwipeDistance) {
+      if (abs(swipeVector.x) > abs(swipeVector.y)) {
+        if (swipeVector.x > 0) handleMoveRight();
+        else handleMoveLeft();
+      } else {
+        if (swipeVector.y > 0) handleMoveDown();
+        else handleMoveUp();
+      }
+    }
+  }
+  
+  //reset touch variables
+  touchPoints = [];
+  initialDistance = 0;
+  currentDistance = 0;
+  touchStartPos = null;
+  touchEndPos = null;
+  return false;
+}
 
 const vertexShader = `
 attribute vec3 aPosition;
@@ -516,17 +541,17 @@ uniform vec2 resolution;
 uniform sampler2D texture;
 uniform bool inkMode;
 
-float rando = 1.0;
+uniform float rando;
 
 float sRandom(vec2 st) {
   return fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 float pattern(vec2 uv) {
-  float scale = 125.0;
-  float line_width = 0.2;
+  float scale = 3.0 * ((resolution.y + resolution.x) / 100.0);
+  float line_width = 0.1;
   vec2 grid = fract(uv * scale);
-  float dOff = sRandom(uv) * 0.5;
+  float dOff = sRandom(uv) * 0.6;
   float diagonal = abs(grid.x - grid.y - dOff);
 
   float off = 1.0 - sRandom(uv * 2.0) * 0.2;
@@ -554,9 +579,9 @@ vec2 wave(vec2 uv, float frequency, float amplitude, float r) {
 void main() {
   vec2 uv = vTexCoord;
   uv.y = 1.0 - uv.y;
-  vec2 pixel_uv = uv;
+  vec2 pixel_uv = uv ;
 
-  pixel_uv += wave(pixel_uv, 500.0, 0.0007, rando) + wave(pixel_uv, 100.0, 0.0005, rando*5.0);
+  pixel_uv += wave(pixel_uv, 500.0, 0.0005, rando) + wave(pixel_uv, 100.0, 0.001, rando*5.0);
 
   float canvas_texture = pattern(pixel_uv);
   vec4 canvas_col = vec4(vec3(canvas_texture), 1.0);
@@ -567,7 +592,8 @@ void main() {
 
   float noise = 0.0;
 
-  noise = (0.5 - sRandom(vec2(uv.x*7.5, uv.y*0.0075))) * 0.25;
+  float base = inkMode ? 0.6 : 0.4;
+  noise = (base - sRandom(vec2(uv.x*25.0, uv.y*0.0075)+rando))*0.3;
 
   gl_FragColor.r += noise;
   gl_FragColor.g += noise;

@@ -66,25 +66,31 @@ input[type="number"] {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
 }
 #instructionWindow {
   position: relative;
-  background-color: rgba(40, 40, 40, 0.9);
-  color: #edede4;
-  text-shadow: 1px 2px 0px black;
-  width: 95%;
-  max-width: 36rem;
-  max-height: 90%;
+  
+  box-sizing: border-box;
+  max-height: calc(100% - 2rem);
+  width: calc(100% - 2rem);
+  max-width: 40rem;
+
   overflow: auto;
   padding: 2rem;
   border-radius: 0.5rem;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+
+  background-color: rgba(40, 40, 40, 0.9);
+  color: #edede4;
+  text-shadow: 1px 2px 0px black;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
 }
 #closeButton {
   position: absolute;
-  top:1rem;
-  right:1rem;
-  font-size: large;
+  top:1.5rem;
+  right:1.5rem;
+  font-size: 1.5rem;
+  padding: 0;
 }
 #instructionForm {
   display: flex;
@@ -112,7 +118,8 @@ input[type="number"] {
   margin: 0.25rem 0;
 }
 .stepsContainer button {
-  padding: 0
+  padding: 0;
+  font-size: medium;
 }
 .step {
   font-weight: bold;
@@ -173,7 +180,7 @@ label{
   top: 0.05rem;
   width: 0.3rem;
   height: 0.7rem;
-  border: solid white;
+  border: solid #8ab0b5;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
@@ -215,8 +222,48 @@ label{
 #buttonContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 3rem;
+  gap: 1rem;
   justify-content: center;
   align-items: center;
-  margin:1rem 0  ;
+  margin:1rem auto;
+}
+
+.guideButtons {
+  padding: 3px 12px;
+  border: 2px solid #8ab0b5;
+  border-radius: 4px;
+}
+.guideButtons:hover {
+  background-color: #8ab0b533;
+  transform: scale(1);
+}
+
+.guideButtons:active{
+  background-color: #8ab0b523;
+}
+
+.mobile {
+  display: none;
+}
+@media (max-width: 600px) {
+  .stepsContainer button {
+    font-size: 1rem;
+  }
+  input[type="number"] {
+    font-size: 1rem;
+  }
+
+  #closeButton {
+    font-size: 2rem;
+  }
+  .guideButtons{
+    font-size: 1rem;
+  }
+
+  .desktop {
+    display: none;
+  }
+  .mobile {
+    display: block;
+  }
 }
