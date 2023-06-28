@@ -22,16 +22,16 @@
       rel="stylesheet"
     >
 
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
   </head>
   
   <body>
-    <script src="/libraries/p5.min.js"></script>
+    <!-- <script src="/libraries/p5.min.js"></script> -->
     <script src="sketch.js"></script>
-
+<!-- 
     <div id="warning" class="hide-warning">
       <p>This shit is taking a while, try reducing the scale.</p>
-    </div>
+    </div> -->
 
     <div id="instructionContainer" class="out">
       <div id="header">
@@ -47,7 +47,7 @@
               type="radio"
               value="guide"
               name="tabs"
-              checked
+              checked="checked"
               class="hidden-radio"
             />
             <label for="guide-tab" onclick="">
@@ -98,12 +98,12 @@
         <section id="guide"  class="tab-active">
       
           <h3 class="tab-content-title">Welcome to the Maurer Expanse!</h3>
-          <p>I could write a whole thing about how I fell in love with exploring the Expanse, but I think the best way to experience it is to dive in and explore yourself!</p>
+          <p>I could write a whole thing about how I fell in love with exploring the Expanse, but I think the best way to experience it, is to dive in and explore yourself!</p>
           <br/>
           <p>This menu and it's tabs are here to help if you want it:</p>
-          <p><bold>Shortcuts</bold> - to navigate without the menu</p>
-          <p><bold>Controls</bold> - to navigate with the menu</p>
-          <p><bold>About"</bold> - to learn some technical details about how the Expanse is generated
+          <p><strong>Shortcuts</strong> - to navigate without the menu</p>
+          <p><strong>Controls</strong> - to navigate with the menu</p>
+          <p><strong>About"</strong> - to learn some technical details about how the Expanse is generated
           and where it came from.</p>
     
         </section>
@@ -197,7 +197,7 @@
           <h3 class="tab-content-title">Display Mode</h3>
           <label class="custom-checkbox">
             <input
-              checked
+              checked="checked"
               value="animation"
               name="radio-mode"
               type="radio"
@@ -267,7 +267,9 @@
           </div>
           <p>The Expanse is made by creating a grid where the x-axis is "d" and the y-axis "n".</p>
           <br/>
-          <p>Changing the scale changes how many patterns are displayed at once.</p>
+          <p>Changing the scale changes how many patterns are displayed at once. <i>Careful here, displaying too many can drastically slow down the experience.</i></p>
+         
+          <br/>
           <p>Changing the depth changes the amount of change between each row and column.</p>
           <br/>
           <p>And that's pretty much it. Nearly infinite possibilities from just a few lines of code. Happy exploring!</p>

@@ -68,6 +68,25 @@ function setup() {
 
   palette = (Object.values(PALETTES).sort(() => random() - 0.35))[0]
 
+  switch (palette) {
+    case PALETTES.VOID: {
+      mainColor = color(60, 100, 99);
+      bgColor = color(260, 100, 1);
+      break;
+    }
+    case PALETTES.INK: {
+      mainColor = color(260, 90, 3);
+      bgColor = color(60, 50, 99);
+      break;
+    }
+    case PALETTES.NEON: {
+      mainColor = color(60, 50, 100);
+      const h = random(180, 320)
+      bgColor = color(h, 100, 5);
+      break
+    }
+  }
+
   initDepth = [0.1, 1, 0.01, 2, 0.001, 10, 0.0001].sort(() => random() - 0.4)[0]
   initScl = round(random(2, 14))
   resetParams()
@@ -91,13 +110,13 @@ function setup() {
   saveButton = document.getElementById("saveButton")
   cancelButton = document.getElementById("cancelButton")
   randomizeButton = document.getElementById("randomizeButton")
-  warning = document.getElementById("warning")
+  // warning = document.getElementById("warning")
 
   tabRadioButtons = document.querySelectorAll('input[type=radio][name="tabs"]');
 
   instructionContainer.className = "out";
 
-  warning.className = "hide-warning";
+  // warning.className = "hide-warning";
   
   closeButton.onclick = () => handleMenuToggle();
 
@@ -122,6 +141,7 @@ function setup() {
   animationCheckbox.onchange = e => handleModeChange(e.target.value);
   constellationCheckbox.onchange = e => handleModeChange(e.target.value);
   danceCheckbox.onchange = e => handleModeChange(e.target.value);
+  
 
   saveButton.onclick = () => handleSave()
   cancelButton.onclick = () => handleMenuToggle();
@@ -142,7 +162,7 @@ function initUI() {
 
 
 function draw() {
-  handleShowWarning()
+  // handleShowWarning()
   if (counter < counterMax && loading == false) {
     drawGrid()
   } 
@@ -167,24 +187,7 @@ function resetParams() {
 }
 
 function initParams() {
-  switch (palette) {
-    case PALETTES.VOID: {
-      mainColor = color(60, 100, 99);
-      bgColor = color(260, 100, 1);
-      break;
-    }
-    case PALETTES.INK: { 
-      mainColor = color(260, 85, 5);
-      bgColor = color(60, 50, 99);
-      break;
-    }
-    case PALETTES.NEON: {
-      mainColor = color(60, 50, 100);
-      const h = random(180, 320)
-      bgColor = color(h, 100, 5);
-      break
-    }
-  }
+
 
   initD = round(randomGaussian(0, 1000))
   initN = round(randomGaussian(0, 1000))
@@ -229,7 +232,7 @@ function drawGrid() {
 
       // For NEON PAllet
       const getN = (min, max, off = 0) => {
-        const rat = 0.002//0.0015
+        const rat = 0.002
         const xoff = d + ((v1.x - p.x) * scl) * rat 
         const yoff = n + ((v1.y - p.y) * scl) * rat
         return map(noise(xoff+ off, yoff  + off), 0, 1, min, max)
@@ -248,7 +251,7 @@ function drawGrid() {
       } else {
         graphics.strokeWeight(1);
 
-        const al = map(scl, 1, 5, 0.35, 0.2, true)
+        const al = map(scl, 1, 4, 0.25, 0.1, true)
         c.setAlpha(al)
         graphics.stroke(c);
       }
@@ -365,13 +368,13 @@ const dbMakeGrid = () => {
   deboucedMakeGrid()
 }
 
-function handleShowWarning() {
-  if (frameRate() < 30) {
-    warning.className = "show-warning"
-  } else {
-    warning.className = "hide-warning"
-  }
-}
+// function handleShowWarning() {
+//   if (frameRate() < 12) {
+//     warning.className = "show-warning"
+//   } else {
+//     warning.className = "hide-warning"
+//   }
+// }
 
 
 function handleMenuToggle() { 
@@ -521,7 +524,7 @@ function mouseInInstructionContainer() {
   if (width < 600) {
     return !instructionWindowHidden
   }
-  if (mouseX > width - 430 && mouseY < 500 && !instructionWindowHidden) return true
+  if (mouseX > width - 430 && mouseY < 550 && !instructionWindowHidden) return true
   return false
 }
 
@@ -534,7 +537,7 @@ let touchStartPos = null;
 let touchEndPos = null;
 let movingPos = null;
 
-const minSwipeDistance = 50;
+const minSwipeDistance = 100;
 const doubleTapInterval = 400; // Time in milliseconds between taps to be considered a double tap
 
 function checkNoSwipe() { 
@@ -591,6 +594,9 @@ function touchStarted() {
   lastTouchTime = currentTime;
   return false
 }
+function mousePressed() {
+  touchStarted()
+}
 
 function touchMoved() {
   if (mouseInInstructionContainer()) return
@@ -601,6 +607,9 @@ function touchMoved() {
     currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
   }
   return false;
+}
+function mouseDragged() {
+  touchMoved()
 }
 
 function touchEnded() {
@@ -640,6 +649,9 @@ function touchEnded() {
   touchStartPos = null;
   touchEndPos = null;
   return false;
+}
+function mouseReleased() { 
+  touchEnded()
 }
 
 function isWebGLSupported() {
