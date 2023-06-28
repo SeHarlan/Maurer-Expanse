@@ -1,11 +1,12 @@
-@font-face {
+/* @font-face {
   font-family: 'W95FA';
   src:
     url('./w95fa.woff2') format('woff2 supports variations'),
     url('./w95fa.woff2') format('woff2-variations');
-}
+} */
 
 html, body {
+  font-size: large;
   margin: 0;
   padding: 0;
   height: 100%;
@@ -13,257 +14,400 @@ html, body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  font-smooth: never;
-  -webkit-font-smoothing : none;
-  font-family: monospace;
+  /* font-smooth: never; */
+  /* -webkit-font-smoothing : none; */
+  /* font-family: "W95FA", monospace; */
+  font-family: 'VT323', monospace;
 }
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --windowGray: #C4C4C4;
+  --windowGrayDark: #7D8583;
+  --windowHeader: #100084;
+  --windowBorder: rgb(39, 39, 39) -2px -2px 0px 0px inset, rgb(236, 236, 236) 2px 2px 0px 0px inset, rgb(117, 117, 117) -3px -3px 0px 0px inset, rgb(218, 218, 218) 3px 3px 0px 0px inset;
+  --windowBorderSmall: rgb(39, 39, 39) -1px -1px 0px 0px inset, rgb(236, 236, 236) 1px 1px 0px 0px inset, rgb(117, 117, 117) -2px -2px 0px 0px inset, rgb(218, 218, 218) 2px 2px 0px 0px inset;
+  --windowBorderNoBottom: rgb(39, 39, 39) -1px 0px 0px 0px inset, rgb(236, 236, 236) 1px 1px 0px 0px inset, rgb(117, 117, 117) -2px 0px 0px 0px inset, rgb(218, 218, 218) 2px 2px 0px 0px inset;
+  --windowInset: rgb(222 220 222) -1px -1px 0px 0px inset, rgb(160 153 161) 1px 1px 0px 0px inset, rgb(202 198 203) -2px -2px 0px 0px inset, rgb(70 65 71) 2px 2px 0px 0px inset;
+}
+
+
+::-webkit-scrollbar {
+    width: 16px
+}
+::-webkit-scrollbar-track {
+  background-color:  rgb(210, 210, 210);
+  background-position: 0px 0px, -1px -1px;
+  background-size: 2px 2px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(202, 198, 203);
+  border-color: rgb(202, 198, 203) rgb(70, 65, 71) rgb(70, 65, 71) rgb(202, 198, 203);
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: rgb(255 255 255) 1px 1px 0px 0px inset, rgb(160 153 161) -1px -1px 0px 0px inset;
+  height: 16px;
+  width: 16px;
+  z-index: 1;
+}
+
 
 p, h1, h2, h3 {
   margin: 0;
 }
+bold {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+input, button {
+  font-family: 'VT323', monospace;
+}
+input {
+  z-index: 20;
+  border: none;
+  background: white;
+  box-shadow: var(--windowInset);
+  padding: 3px 6px;
+}
+button {
+  border: none;
+}
+
 
 canvas {
   display: block;
   user-select: none;
 }
-button {
-  cursor: pointer;
-  color: #8a9ab5;
-  background-color: transparent;
-  border: none;
-  filter: drop-shadow(2px 2px 0px rgb(0, 0, 0));
+.code-block {
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  box-shadow: var(--windowInset);
+  background-color: white;
 }
 
-button:hover {
-  transform:scale(1.1);
- 
-}
-button:active {
-  transform: scale(1);
-}
-
-input {
-  border-radius: 0;
-  background-color: transparent;
-  border: none;
-  border-bottom: 2px solid #8ab0b5;
-  color: white;
-  filter: drop-shadow(2px 2px 0px rgb(0, 0, 0));
-}
-
-input[type="number"] {
-  width: 5rem
-}
-
-#instructionContainer {
-  /* font-family: W95FA; */
-  z-index:10;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
-#instructionWindow {
+.classic-button{
   position: relative;
-  
-  box-sizing: border-box;
-  max-height: calc(100% - 2rem);
-  width: calc(100% - 2rem);
-  max-width: 40rem;
-
-  overflow: auto;
-  padding: 2rem;
-  border-radius: 0.5rem;
-
-  background-color: rgba(40, 40, 40, 0.9);
-  color: #edede4;
-  text-shadow: 1px 2px 0px black;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+  transition: 100ms;
+  background-color: rgb(202, 198, 203);
+  box-shadow: rgb(70 65 71) -1px -1px 0px 0px inset, white 1px 1px 0px 0px inset, rgb(160 153 161) -2px -2px 0px 0px inset, rgb(222 220 222) 2px 2px 0px 0px inset;
 }
-#closeButton {
+.classic-button:active {
+  padding: 2px 0 0 2px;
+  background: linear-gradient(45deg, rgb(239, 238, 240) 25%, transparent 25%, transparent 75%, rgb(239, 238, 240) 75%, rgb(239, 238, 240)) 0px 0px / 2px 2px, rgb(202, 198, 203);
+  box-shadow: white -1px -1px 0px 0px inset, rgb(70, 65, 71) 1px 1px 0px 0px inset, rgb(222, 220, 222) -2px -2px 0px 0px inset, rgb(202, 198, 203) 2px 2px 0px 0px inset;
+}
+
+.classic-button:after {
+  content: "";
   position: absolute;
-  top:1.5rem;
-  right:1.5rem;
-  font-size: 1.5rem;
-  padding: 0;
-}
-#instructionForm {
-  display: flex;
-  column-gap: 2rem;
-  row-gap: 1rem;
-  flex-direction: column;
-}
-#leftButton span {
-  display: inline-block;
-  transform: rotate(180deg);
-}
-#upButton span {
-  display: inline-block;
-  transform: rotate(-90deg);
-}
-#downButton span{
-  display: inline-block;
-  transform: rotate(90deg);
-}
-.stepsContainer {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0.25rem 0;
-}
-.stepsContainer button {
-  padding: 0;
-  font-size: medium;
-}
-.step {
-  font-weight: bold;
-}
-
-label{
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.hidden {
-  height: 1px;
-  overflow: hidden;
+  inset: 2px 3px 2px 2px;
+  border: 1px dashed black;
   opacity: 0;
-  transition: 0.75s;
+  transition: 200ms;
 }
-.notHidden {
-  height: inherit;
+.classic-button:hover:after {
   opacity: 1;
-  transition: 0.75s;
 }
-.out {
-  transition: 0.5s;
-  transform: translateY(100vh);
-  opacity: 0;
+.classic-button:active:after {
+  inset: 2px 2px 2px 2px;
 }
-.in {
-  transform: translateY(0);
-  opacity: 1;
-  transition: 0.5s;
-}
-
-.hidden-checkbox {
-  position: absolute;
-  opacity: 0;
+.custom-checkbox {
   cursor: pointer;
-  height: 0;
-  width: 0;
+  display: flex;
+  gap: 6px;
 }
-
+.hidden-checkbox {
+  display: none;
+}
 .checkmark {
   position: relative;
   top: 0;
   left: 0;
-  height: 1.1rem;
-  width: 1.1rem;
-  border: 2px solid #8ab0b5;
-  border-radius: 4px;
+  height: 16px;
+  width: 16px;
+  background-color: white;
+  border: inset 1px rgb(220, 220, 220);
+  border-radius: 100%;
+}
+.checkmark:before {
+  content: "";
+  position: absolute;
+  background-color: none;
+  border-radius: 100%;
+  border: inset 2px rgb(146, 146, 146);
+  top: 0px;
+  left: 0px;
+  height: 10px;
+  width: 10px;
 }
 
 .checkmark:after {
   content: "";
   position: absolute;
   display: none;
-  left: 0.33rem;
-  top: 0.05rem;
-  width: 0.3rem;
-  height: 0.7rem;
-  border: solid #8ab0b5;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  left: 4px;
+  top: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 100%;
+  background: black
 }
 
 .custom-checkbox input:checked ~ .checkmark:after {
   display: block;
 }
 
-.custom-checkbox {
-  cursor: pointer;
+
+/* WARNING STUFF */
+#warning {
+  position: fixed;
+  left: 0;
+  color: #858585;
+  padding: 2rem;
+  width: 100%;
+  text-align: center;
+  animation: pulse 2s infinite;
+  transition: bottom 2s;
+}
+.hide-warning {
+  bottom: -5rem;
+}
+.show-warning {
+  bottom: 0;
 }
 
-#guideButton {
-  position: relative;
-  margin-left: 0.75rem;
+/* Basic Panel */
+#instructionContainer {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 430px;
+  max-width: 100%;
+  height: 500px;
+  max-height: 100vh;
+  max-height: 100svh;
+  transition: 0.35s;
+
+  padding: 4px;
+  background-color: var(--windowGray);
+  border-radius: 2px;
+  box-shadow: var(--windowBorder);
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: min-content 1fr min-content;
 }
-#guideButton:after {
+
+#instructionContainer::before {
   content: "";
   position: absolute;
+  top: 0;
   left: 0;
-  top: -0.25rem;
-  width: 0.4rem;
-  height: 0.4rem;
-  border: solid #8ab0b5;
-  border-width: 0 3px 3px 0;
-  transform: rotate(45deg);
+  width: 100%;
+  height: 100%;
+  box-shadow: -3px 2px 3px rgba(130, 130, 130, 0.3);
+  z-index: -1;
+}
+#instructionContainer.out {
+  right: -430px;
+  top: -500px;
+  opacity: 0.25;
+}
+#instructionContainer.in{
+  right: 0;
+  top: 0;
+  opacity: 1;
 }
 
-#guideButton.open:after {
-  transform: rotate(-135deg);;
-}
-
-#guideTitle {
-  cursor: pointer;
-  margin: 1rem 0;
+#header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  background-color: var(--windowHeader);
+  color:white;
+  font-size: 0.65rem;
+  line-height: 0;
+  padding: 4px 3px 4px 5px;
 }
-#buttonContainer {
+#closeButton {
+  width: 20px;
+  height: 18px;
+  font-size: 22px;
+  line-height: 0;
+  font-weight: bolder;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   justify-content: center;
   align-items: center;
-  margin:1rem auto;
 }
 
-.guideButtons {
-  padding: 3px 12px;
-  border: 2px solid #8ab0b5;
-  border-radius: 4px;
-}
-.guideButtons:hover {
-  background-color: #8ab0b533;
-  transform: scale(1);
+/* Panels */
+#panelsContainer {
+  position: relative;
+  margin: 8px 8px 0 6px;
+  display: grid;
+  grid-template-rows: min-content 1fr;
 }
 
-.guideButtons:active{
-  background-color: #8ab0b523;
+#tabs {
+  display: flex;
+  align-items: flex-end;
 }
+#tabs input:checked + label {
+  height: 1.35rem;
+  padding-top: 0.2rem;
+  margin-bottom: -2px;
+  z-index: 2;
+}
+
+#tabs label {
+  transform-origin: top left;
+  position: relative;
+  width: fit-content;
+  display: block;
+  font-size: 0.95rem;
+  padding: 2px 8px;
+  height: 1.1rem;
+  z-index: 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;;
+  text-align: center;
+  background-color: var(--windowGray);
+  box-shadow: var(--windowBorderNoBottom);
+  cursor: pointer;
+  transition: 200ms;
+}
+
+#tabs label:after {
+  content: "";
+  position: absolute;
+  inset: 3px 4px 2px 3px;
+  border: 1px dashed black;
+  opacity: 0;
+  transition: 200ms;
+}
+#tabs label:hover:after {
+  opacity: 1;
+}
+
+.hidden-radio {
+  display: none;
+}
+
+#panelsContainer > section {
+  border-radius: 2px;
+  border-top-left-radius: 0px;
+  height: 100%;
+  max-height: 400px;
+  padding: 8px 12px 12px;
+  box-shadow: var(--windowBorderSmall);
+  overflow-y: auto;
+}
+.tab-active {
+  display: block;
+}
+.tab-hidden {
+  display: none;
+}
+
+.tab-content-title {
+  margin-bottom: 0.3rem;
+
+}
+
+.stepsContainer{
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.stepsContainer button {
+  font-size: 1.6rem;
+  line-height: 1rem;
+  width: 1.7rem;
+  height: 1.4rem;
+  font-weight: bold;
+}
+.step {
+  font-size: 1.2rem;
+}
+.stepsContainer span {
+  display: inline-block;
+  transform-origin: center center;
+}
+#leftButton span {
+  transform: rotate(180deg) translateY(0.05rem);
+}
+#upButton span {
+  transform: rotate(270deg) translateY(0.05rem);
+}
+#downButton span {
+  transform: rotate(90deg) translateY(0.05rem);
+}
+
+.shortcut-row {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  gap: 4px;
+  align-items: flex-start;
+}
+.shortcut-row span {
+  margin-top: -2px;
+}
+
+.num-input-wraper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0
+}
+
+/* Main Buttons */
+#buttonContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 8px;
+}
+#buttonContainer button {
+  font-size: 0.95rem;
+  padding: 2px;
+  text-align: center;
+  width: 86px;
+  height: 24px;
+}
+
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+.underline {
+  text-decoration: underline;
+} 
 
 .mobile {
   display: none;
 }
+.desktop {
+  display: block;
+}
+
 @media (max-width: 600px) {
-  .stepsContainer button {
-    font-size: 1rem;
+  #instructionContainer {
+    height: 100vh;
+    height: 100svh;
   }
-  input[type="number"] {
-    font-size: 1rem;
-  }
-
-  #closeButton {
-    font-size: 2rem;
-  }
-  .guideButtons{
-    font-size: 1rem;
-  }
-
-  .desktop {
-    display: none;
+  #panelsContainer > section {
+    max-height: 100%;
   }
   .mobile {
     display: block;
+  }
+  .desktop {
+    display: none;
   }
 }

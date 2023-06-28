@@ -8,147 +8,287 @@
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
-  </head>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    >
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    >
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    >
 
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script> -->
+  </head>
+  
   <body>
+    <script src="/libraries/p5.min.js"></script>
     <script src="sketch.js"></script>
 
+    <div id="warning" class="hide-warning">
+      <p>This shit is taking a while, try reducing the scale.</p>
+    </div>
+
     <div id="instructionContainer" class="out">
-      <div id="instructionWindow">
-        <button id="closeButton">✕</button>
-            
-        <div id="instructionForm">
-          <h1>Maurer Expanse</h1>
-          <h3>Parameters and Shortcuts Menu</h3>
-
-          <i class="mobile">Double tap to toggle the menu</i>
-
-          <i class="desktop">"m" to toggle the menu</i>
-          <i class="desktop">"q" to reset all parameters</i>
-          <i class="desktop">"s" to save a screenshot</i>
-          <i class="desktop">"p" to save a hi-res render</i>
-
-          <label>
-            Base Location: 
-            <input type="number" id="baseNumberInput" >
-            <i class="desktop">"r" to randomize</i>
-          </label>
-            
+      <div id="header">
+        <h1>Maurer Expanse</h1>
+        <button id="closeButton" class="classic-button"><span>&#x2715;</span></button>
+      </div>
+          
+      <div id="panelsContainer">
+        <div id="tabs">
           <div>
+            <input
+              id="guide-tab"
+              type="radio"
+              value="guide"
+              name="tabs"
+              checked
+              class="hidden-radio"
+            />
+            <label for="guide-tab" onclick="">
+              Guide
+            </label>
+          </div>
+          <div>
+            <input
+              id="shortcuts-tab"
+              type="radio"
+              value="shortcuts"
+              name="tabs"
+              class="hidden-radio"
+            />
+            <label for="shortcuts-tab" onclick="">
+              Shortcuts
+            </label>
+          </div>
+          <div>
+            <input 
+              id="controls-tab"
+              type="radio" 
+              value="controls" 
+              name="tabs"
+              class="hidden-radio"
+            />
+            <label for="controls-tab" onclick="">
+              Controls
+            </label>
+          </div>
+          <div>
+            <input
+              id="about-tab"
+              type="radio"
+              value="about"
+              name="tabs"
+              class="hidden-radio"
+            />
+            <label
+              for="about-tab"
+              onclick=""
+            >
+              About
+            </label>
+          </div>
+          
+        </div>
+        <section id="guide"  class="tab-active">
+      
+          <h3 class="tab-content-title">Welcome to the Maurer Expanse!</h3>
+          <p>I could write a whole thing about how I fell in love with exploring the Expanse, but I think the best way to experience it is to dive in and explore yourself!</p>
+          <br/>
+          <p>This menu and it's tabs are here to help if you want it:</p>
+          <p><bold>Shortcuts</bold> - to navigate without the menu</p>
+          <p><bold>Controls</bold> - to navigate with the menu</p>
+          <p><bold>About"</bold> - to learn some technical details about how the Expanse is generated
+          and where it came from.</p>
+    
+        </section>
+
+        <section id="shortcuts" class="tab-hidden">
+          <h3 class="tab-content-title">How to navigate</h3>
+          <div class="desktop">
+            <div class="shortcut-row"><span>❖</span>
+              <p>"m" toggles this menu</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"r" randomizes the coordinates</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"p" saves the currently rendered image</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>Arrow keys moves position</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>Double click to move to a pattern</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"-" and "+" decreases and increases the grids scale</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"[" and "]" decreases and increases the grids depth</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"a" to toggle animation mode</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"d" to toggle dance mode</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"c" to toggle constellation mode</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>"s" to toggle static mode</p>
+            </div>
+          </div>
+          <div class="mobile">
+            <div class="shortcut-row"><span>❖</span>
+              <p>Swipe in from the top-right to open the menu</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>Swipe directionally to move position</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>Pinch out and in to increase and decrease the scale</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>Double tap to move to a pattern</p>
+            </div>
+            <div class="shortcut-row"><span>❖</span>
+              <p>Tap and hold down to toggle dance mode</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="controls" class="tab-hidden">
+          <h3 class="tab-content-title">Position</h3>
+          <div class="mb-16">
             <div class="stepsContainer">
-              <button id="leftButton"><span>➔</span></button>
-              <button id="rightButton"><span>➔</span></button>
+              <button id="leftButton" class="classic-button"><span>➔</span></button>
+              <button id="rightButton" class="classic-button"><span>➔</span></button>
               
               <p>Horizontal step:</p>
               <span id="horizontalStep" class="step"></span>
             </div>
             <div class="stepsContainer">  
-              <button id="downButton"><span>➔</span></button>
-              <button id="upButton"><span>➔</span></button>
+              <button id="downButton" class="classic-button"><span>➔</span></button>
+              <button id="upButton" class="classic-button"><span>➔</span></button>
               
               <p>Vertical step:</p>
               <span id="verticalStep" class="step"></span>
             </div>
           </div>
           
-          <label>
+          <h3 class="tab-content-title">Other Grid stuff</h3>
+          <label class="num-input-wraper">
             Scale: 
             <input type="number" id="scaleNumberInput" min="1">
-            <i class="desktop">"-" and "+"</i>
           </label>
           
-          <label>
+          <label class="num-input-wraper mb-16">
             Depth: 
-            <input type="number" id="depthNumberInput" >
-            <i class="desktop">"[" and "]"</i>
+            <input type="number" id="depthNumberInput" step="0.1" >
           </label>
           
+          <h3 class="tab-content-title">Display Mode</h3>
           <label class="custom-checkbox">
-            <input type="checkbox" id="animationCheckbox" class="hidden-checkbox">
-            <span class="checkmark"></span>
-            Animation Mode <i class="desktop">"a" to toggle</i>
-          </label>
-          <label class="custom-checkbox">
-            <input type="checkbox" id="constellationCheckbox" class="hidden-checkbox">
-            <span class="checkmark"></span>
-            Constellation Mode <i class="desktop">"c" to toggle</i>
-          </label> 
-          <label class="custom-checkbox">
-            <input type="checkbox" id="inkCheckbox" class="hidden-checkbox"
+            <input
+              checked
+              value="animation"
+              name="radio-mode"
+              type="radio"
+              id="animationCheckbox"
+              class="hidden-checkbox"
             >
             <span class="checkmark"></span>
-            Ink Mode <i class="desktop">"i" to toggle</i>
+            <p>
+              <span class="underline">A</span>nimation
+            </p>
+          </label>
+          <label class="custom-checkbox">
+            <input
+              value="dance"
+              name="radio-mode"
+              type="radio"
+              id="danceCheckbox"
+              class="hidden-checkbox"
+            >
+            <span class="checkmark"></span>
+            <p>
+              <span class="underline">D</span>ance
+            </p>
           </label>
 
 
-          <div id="buttonContainer">
-            <button id="resetButton" class="guideButtons">Reset</button>
-            <button id="randomizeButton" class="guideButtons">Randomize</button>
-            <button id="saveButton" class="guideButtons">Save</button>
+          <label class="custom-checkbox">
+            <input  value="constellation" name="radio-mode" type="radio" id="constellationCheckbox" class="hidden-checkbox">
+            <span class="checkmark"></span>
+            <p>
+              <span class="underline">C</span>onstellation
+            </p>
+          </label> 
+
+          <label class="custom-checkbox">
+            <input
+              value="static"
+              name="radio-mode"
+              type="radio"
+              id="staticCheckbox"
+              class="hidden-checkbox"
+            >
+            <span class="checkmark"></span>
+            <p>
+              <span class="underline">S</span>tatic
+            </p>
+          </label>
+         
+        </section>
+
+        <section id="about" class="tab-hidden">
+
+          <h3 class="tab-content-title">How does it work?</h3>
+          <p>Maurer Expanse an exploration of the Maurer Rose, a geometric concept introduced by Peter M. Maurer. The core algorythm is
+            pretty compact and takes just two variables, "d" and "n":</p>
+          <div class="code-block">
+            // where theta is a number from 0 to 361
+            <br />
+            const k = theta * d * (PI / 180);
+            <br />
+            const r = 200 * sin(n * k);
+            <br />
+            const x = r * cos(k);
+            <br />
+            const y = r * sin(k);
+            <br />
           </div>
-        </div>
-
-        <div id="guideTitle">
-          <h3>Guide</h3>
-          <button id="guideButton" ></button>
-        </div>
-
-        <div id="guideList" class="hidden">
-          <div class="desktop">
-            <p>Press "r" to randomize your starting point (the top left pattern or "Base Location")</p>
-            
-            <br/>
-            <div>
-              <p>Once you've found an interesting location, use arrow keys to step through and explore the Maurer Expanse.</p>
-              <p>If you click on a pattern and hold you can move directly there.</p>
-              <i>Arrow keys are disabled while this menu is open.</i>
-            </div>
-            
-            <br/>
-            <div>
-              <p>Use "-" and "+" to zoom out and in.</p>
-              <i>Zooming out a lot can increase rendering time</i>
-            </div>
-    
-            <br/>
-            <div>
-              <p>Use "[" and "]" to decrease or increase the depth (amount of change between patterns)</p>
-              <i>Changing the depth by doubling or halving leads to the most recognizable changes</i>
-            </div>
-            <br />
-            <p>Once you've set the perfect scene, use "s" to save a screenshot or "p" to render a high quality version and save that.</p>
-
-            <br/>
-            <p>If you would like to start over and reset all the base parameters use "q"</p>
-          </div>
-
-          <div class="mobile">
-            <p>Tap Randomize to change your starting point (the top left pattern or "Base Location")</p>
-            <br />
-            <div>
-              <p>Once you've found an interesting location, swipe to step through and explore the Maurer Expanse.</p>
-              <p>If you tap and hold a pattern you can move directly there.</p>
-            </div>
-            
-            <br />
-            <div>
-              <p>Use pinch gestures to zoom out and in.</p>
-              <i>Zooming out a lot can increase rendering time</i>
-            </div>
-            
-            <br />
-            <div>
-              <p>Decrease or increase the depth (amount of change between patterns)</p>
-              <i>Changing the depth by doubling or halving leads to the most recognizable changes</i>
-            </div>
-            <br />
-            <p>Once you've set the perfect scene tap Save to capture it.</p>
-            <br/>
-            <p>If you would like to start over, tap Reset to reset all the base parameters</p>
-        </div>
+          <p>The Expanse is made by creating a grid where the x-axis is "d" and the y-axis "n".</p>
+          <br/>
+          <p>Changing the scale changes how many patterns are displayed at once.</p>
+          <p>Changing the depth changes the amount of change between each row and column.</p>
+          <br/>
+          <p>And that's pretty much it. Nearly infinite possibilities from just a few lines of code. Happy exploring!</p>
+        </section>
       </div>
-    
+
+
+      <div id="buttonContainer">
+        <button
+          id="cancelButton"
+          class="classic-button"
+        >Close</button>
+        <button
+          id="randomizeButton"
+          class="classic-button"
+        >Randomize</button>
+        <button
+          id="saveButton"
+          class="classic-button"
+        >Save</button>
+      </div>
     </div>
   </body>
 </html>
